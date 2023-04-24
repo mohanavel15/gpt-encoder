@@ -166,9 +166,42 @@ impl Encoder {
         bpe_tokens
     }
 
-    pub fn decode(&mut self, token: Vec<u64>) -> String {
+    pub fn decode(&self, token: Vec<u64>) -> String {
         let text: String = token.iter().map(|t| self.decoder.get(t).unwrap().clone()).collect::<Vec<_>>().join("");
         let text: Vec<u8> = text.chars().map(|c| self.byte_decoder.get(&c).unwrap().clone()).collect::<Vec<_>>();
         String::from_utf8(text).unwrap()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test() -> Result<(), String> {
+        let mut encoder = Encoder::new();
+
+        test_encoder(&mut encoder,"Space", " ".to_string(), vec![220])?;
+        test_encoder(&mut encoder,"Tab", "\t".to_string(), vec![197])?;
+        test_encoder(&mut encoder,"Simple text", "This is some text".to_string(), vec![1212, 318, 617, 2420])?;
+        test_encoder(&mut encoder,"indivisible", "indivisible".to_string(), vec![521, 452, 12843])?;
+        test_encoder(&mut encoder,"emojis", "hello 👋 world 🌍".to_string(), vec![31373, 50169, 233, 995, 12520, 234, 235])?;
+        test_encoder(&mut encoder,"properties of Object", "toString constructor hasOwnProperty valueOf".to_string(), vec![1462, 10100, 23772, 468, 23858, 21746, 1988, 5189])?;
+
+        Ok(())
+    }
+
+    fn test_encoder(encoder: &mut Encoder, title: &str, text: String, expected: Vec<u64>) -> Result<(), String> {
+        let encoded = encoder.encode(text.clone());
+        if encoded != expected {
+            return Err(format!("{}: encoded output did not match the expected output", title))
+        }
+    
+        let decoded = encoder.decode(encoded);
+        if decoded != text {
+            return Err(format!("{}: decoded output did not match the input text", title))
+        }
+    
+        Ok(())
     }
 }
