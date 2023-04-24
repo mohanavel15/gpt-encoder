@@ -1,3 +1,24 @@
+//! # GPT-Encoder
+//! Rust BPE Encoder Decoder for GPT-2 / GPT-3
+//! 
+//! This is rewrite of [openai's gpt-2 encoder](https://github.com/openai/gpt-2/blob/master/src/encoder.py) and [latitudegames's GPT-3-Encoder](https://github.com/latitudegames/GPT-3-Encoder) in rust
+//! 
+//! # Example
+//! ```
+//! use gpt_encoder::Encoder;
+//! 
+//! fn main() {
+//!     let mut encoder = Encoder::new();
+//!     let encoded = encoder.encode("Hello, World".to_string());
+//!     println!("{:?}", encoded); 
+//!     // prints: [15496, 11, 2159]
+//! 
+//!     let decoded = encoder.decode(encoded);
+//!     println!("{:?}", decoded); 
+//!     // prints: "Hello, World"
+//! }
+//! ```
+
 use regex::Regex;
 use serde_json::{from_str, Value};
 use std::collections::{HashMap, HashSet};
@@ -43,6 +64,7 @@ pub struct Encoder {
 }
 
 impl Encoder {
+    /// To create new instance of Encoder
     pub fn new() -> Self {
         let pat = Regex::new(r"'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+").unwrap();
         let byte_encoder = bytes_to_unicode();
@@ -139,6 +161,14 @@ impl Encoder {
         word
     }
     
+    /// # Example
+    /// ```
+    /// use gpt_encoder::Encoder;
+    /// 
+    /// let mut encoder = Encoder::new();
+    /// let encoded = encoder.encode("Hello, World".to_string());
+    /// assert_eq!(encoded, vec![15496, 11, 2159]);
+    /// ```
     pub fn encode(&mut self, text: String) -> Vec<u64> {
         let mut bpe_tokens = vec![];
 
@@ -166,6 +196,14 @@ impl Encoder {
         bpe_tokens
     }
 
+    /// # Example
+    /// ```
+    /// use gpt_encoder::Encoder;
+    /// 
+    /// let encoder = Encoder::new();
+    /// let decoded = encoder.decode(vec![15496, 11, 2159]);
+    /// assert_eq!(decoded, "Hello, World".to_string());
+    /// ```
     pub fn decode(&self, token: Vec<u64>) -> String {
         let text: String = token.iter().map(|t| self.decoder.get(t).unwrap().clone()).collect::<Vec<_>>().join("");
         let text: Vec<u8> = text.chars().map(|c| self.byte_decoder.get(&c).unwrap().clone()).collect::<Vec<_>>();
