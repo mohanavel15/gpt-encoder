@@ -1,0 +1,16 @@
+[package]
+name = "gpt-encoder"
+description = "Rust BPE Encoder Decoder for GPT-2 / GPT-3"
+repository = "https://github.com/mohanavel15/gpt-encoder"
+license = "MIT"
+authors = ["Mohan <mohanavel15@protonmail.com>"]
+keywords = ["gpt", "bpe", "encoder", "decoder"]
+version = "0.1.0"
+edition = "2021"
+readme = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+regex = "1.7.3"
+serde_json = "1.0.96"
