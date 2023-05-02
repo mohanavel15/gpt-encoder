@@ -5,7 +5,7 @@ repository = "https://github.com/mohanavel15/gpt-encoder"
 license = "MIT"
 authors = ["Mohan <mohanavel15@protonmail.com>"]
 keywords = ["gpt", "bpe", "encoder", "decoder"]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 readme = "README.md"
 

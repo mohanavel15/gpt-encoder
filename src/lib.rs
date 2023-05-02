@@ -207,7 +207,7 @@ impl Encoder {
     pub fn decode(&self, token: Vec<u64>) -> String {
         let text: String = token.iter().map(|t| self.decoder.get(t).unwrap().clone()).collect::<Vec<_>>().join("");
         let text: Vec<u8> = text.chars().map(|c| self.byte_decoder.get(&c).unwrap().clone()).collect::<Vec<_>>();
-        String::from_utf8(text).unwrap()
+        String::from_utf8_lossy(&text).to_string()
     }
 }
 
